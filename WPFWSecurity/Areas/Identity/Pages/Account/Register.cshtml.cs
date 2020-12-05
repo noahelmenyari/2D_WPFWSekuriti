@@ -65,6 +65,10 @@ namespace WPFWSecurity.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [Display(Name = "Role")]
+            public string Role { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -81,10 +85,15 @@ namespace WPFWSecurity.Areas.Identity.Pages.Account
             {
                 var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
-
-                await _rm.CreateAsync(new IdentityRole { Name = "Docent" });
-                await _um.AddToRoleAsync(user, "Docent");
-                await _um.RemoveFromRoleAsync(user, "Docent");
+                if (Input.Role == "Docent")
+                {
+                    await _rm.CreateAsync(new IdentityRole { Name = "Docent" });
+                    await _um.AddToRoleAsync(user, "Docent");
+                } else if (Input.Role == "Student")
+                {
+                    await _rm.CreateAsync(new IdentityRole { Name = "Student" });
+                    await _um.AddToRoleAsync(user, "Student");
+                }
 
                 if (result.Succeeded)
                 {

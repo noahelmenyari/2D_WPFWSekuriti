@@ -22,7 +22,7 @@ namespace WPFWSecurity.Controllers
         {
             _context = context;
         }
-        [Authorize(Roles = "Student")]
+
         // GET: StudentResultaats
         public async Task<IActionResult> Index()
         {
@@ -46,13 +46,13 @@ namespace WPFWSecurity.Controllers
 
             return View(studentResultaat);
         }
-
+        [Authorize(Roles = "Docent")]
         // GET: StudentResultaats/Create
         public IActionResult Create()
         {
             return View();
         }
-
+        [Authorize(Roles = "Docent")]
         // POST: StudentResultaats/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -68,7 +68,7 @@ namespace WPFWSecurity.Controllers
             }
             return View(studentResultaat);
         }
-
+        [Authorize(Roles = "Docent")]
         // GET: StudentResultaats/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -84,7 +84,7 @@ namespace WPFWSecurity.Controllers
             }
             return View(studentResultaat);
         }
-
+        [Authorize(Roles = "Docent")]
         // POST: StudentResultaats/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
