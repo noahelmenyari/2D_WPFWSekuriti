@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WPFWSecurity.Areas.Identity.Data;
 
 namespace WPFWSecurity.Data
 {
-    public class WPFWSecurityContextA : IdentityDbContext<IdentityUser>
+    public class WPFWSecurityContextA : IdentityDbContext<SchoolUser>
     {
         public WPFWSecurityContextA(DbContextOptions<WPFWSecurityContextA> options)
             : base(options)

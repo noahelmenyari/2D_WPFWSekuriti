@@ -14,7 +14,7 @@
             @Html.DisplayNameFor(model => model.StudentNaam)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StudentNaam)
+            @Html.Raw(Model.StudentNaam)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Cijfer)

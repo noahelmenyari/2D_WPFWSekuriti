@@ -13,24 +13,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using WPFWSecurity.Areas.Identity.Data;
 
 namespace WPFWSecurity.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<SchoolUser> _signInManager;
+        private readonly UserManager<SchoolUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly RoleManager<IdentityRole> _rm;
-        private readonly UserManager<IdentityUser> _um;
+        private readonly UserManager<SchoolUser> _um;
         
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<SchoolUser> userManager,
+            SignInManager<SchoolUser> signInManager,
             ILogger<RegisterModel> logger,
             RoleManager<IdentityRole> rm,
-            UserManager<IdentityUser> um)
+            UserManager<SchoolUser> um)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -83,8 +84,12 @@ namespace WPFWSecurity.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new SchoolUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                await _rm.CreateAsync(new IdentityRole { Name = "Docent" });
+                await _um.AddToRoleAsync(user, "Docent");
+
+
                 if (Input.Role == "Docent")
                 {
                     await _rm.CreateAsync(new IdentityRole { Name = "Docent" });
@@ -94,6 +99,7 @@ namespace WPFWSecurity.Areas.Identity.Pages.Account
                     await _rm.CreateAsync(new IdentityRole { Name = "Student" });
                     await _um.AddToRoleAsync(user, "Student");
                 }
+
 
                 if (result.Succeeded)
                 {

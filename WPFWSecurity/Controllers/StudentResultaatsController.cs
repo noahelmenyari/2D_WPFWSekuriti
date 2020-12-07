@@ -16,8 +16,6 @@ namespace WPFWSecurity.Controllers
     {
         private readonly WPFWSecurityContextA _context;
 
-        private readonly RoleManager<IdentityRole> rm;
-
         public StudentResultaatsController(WPFWSecurityContextA context)
         {
             _context = context;
@@ -46,16 +44,18 @@ namespace WPFWSecurity.Controllers
 
             return View(studentResultaat);
         }
-        [Authorize(Roles = "Docent")]
+
         // GET: StudentResultaats/Create
+        [Authorize(Roles = "Docent")]
         public IActionResult Create()
         {
             return View();
         }
-        [Authorize(Roles = "Docent")]
+
         // POST: StudentResultaats/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Docent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,StudentNaam,Cijfer")] StudentResultaat studentResultaat)
@@ -68,8 +68,9 @@ namespace WPFWSecurity.Controllers
             }
             return View(studentResultaat);
         }
-        [Authorize(Roles = "Docent")]
+
         // GET: StudentResultaats/Edit/5
+        [Authorize(Roles = "Docent")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,10 +85,10 @@ namespace WPFWSecurity.Controllers
             }
             return View(studentResultaat);
         }
-        [Authorize(Roles = "Docent")]
         // POST: StudentResultaats/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Docent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,StudentNaam,Cijfer")] StudentResultaat studentResultaat)
@@ -121,6 +122,7 @@ namespace WPFWSecurity.Controllers
         }
 
         // GET: StudentResultaats/Delete/5
+        [Authorize(Roles = "Docent")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,6 +141,7 @@ namespace WPFWSecurity.Controllers
         }
 
         // POST: StudentResultaats/Delete/5
+        [Authorize(Roles = "Docent")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -152,6 +155,38 @@ namespace WPFWSecurity.Controllers
         private bool StudentResultaatExists(int id)
         {
             return _context.StudentResultaat.Any(e => e.Id == id);
+        }
+
+        public IActionResult Zoek(String query)
+        {
+            if(query != null)
+            {
+                if(int.TryParse(query, out _)) 
+                {
+                    //_context.StudentResultaat.Where(r => r.Cijfer.Equals(q))
+                    var res = _context.StudentResultaat.FromSqlRaw("select * from StudentResultaat where cijfer like '" + query + "'");
+                    _context.SaveChanges();
+                    return View(new Resultaten(query, res));
+                }
+                else
+                {
+                    return View(new Resultaten(query, _context.StudentResultaat.Where(r => r.StudentNaam.Contains(query))));
+                }
+                
+            }
+
+            return View();
+        }
+
+        public class Resultaten
+        {
+            public string Query { get; set; }
+            public IEnumerable<StudentResultaat> Sresultaten { get; set; }
+            public Resultaten(string query, IEnumerable<StudentResultaat> sresultaten)
+            {
+                Query = query;
+                Sresultaten = sresultaten;
+            }
         }
     }
 }
